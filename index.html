@@ -7,6 +7,9 @@
         <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css" />
         <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.2"></script>
         <script src="jspsych/modified-image-plugin.js"> </script>
+        <script src="sentences.js"> </script> 
+        <script src="association.js"> </script> 
+        <script src="priming.js"> </script> 
     </head>
     <body> </body>
     <script>
@@ -19,10 +22,17 @@
         }
         var sentence = {
          type: jsPsychHtmlKeyboardResponse,
-         stimulus: 'I would like a foobly apple',
+         stimulus: jsPsych.timelineVariable('sentence'),
          choices: [" "],
-         trial_duration: 500
+         trial_duration: 10
         } 
+
+        var training_procedure = {
+            timeline: [sentence],
+            timeline_variables: sentences, 
+            randomize_order: true 
+        };
+
         var attention = {
             type: jsPsychSurveyText,
             questions: [{prompt:"Type any ONE novel word from the previous sentence:"}]
@@ -31,12 +41,24 @@
         var association = {
             type: jsPsychSurveyText,
             preamble:  "Respond with the first word comes to mind",
-            questions: [{prompt:"foobly"}],
+            questions: [{prompt:jsPsych.timelineVariable("cue")}],
+            trial_duration: 10
         };
+
+        var association_procedure = {
+            timeline: [association],
+            timeline_variables: association_cues, 
+            randomize_order: true, 
+            reptitions: 3
+        };
+        var training_plus_association =  {
+            timeline: [training_procedure, association_procedure],
+            reptitions: 3 
+        }
 
         var image = {
             type: jsPsychImageKeyboardResponse,
-            stimulus: "applehorse.png",
+            stimulus: jsPsych.timelineVariable('image_path'),
             choices: "NO_KEYS",
             trial_duration: 500,
             stimulus_width: 500,
@@ -46,23 +68,27 @@
 
         var prime = {
             type: jsPsychImageKeyboardResponse,
-            stimulus: "applehorse.png",
+            stimulus: jsPsych.timelineVariable('image_path'),
             trial_duration: 300,
             choices: "NO_KEYS",
             stimulus_width: 500,
             maintain_aspect_ratio: true,
-            prompt: "<span style = 'font-size:170%'>foobly<br><br></span"
+            prompt: jsPsych.timelineVariable('prime_word'),
         }
         var target = {
             type:jsPsychImageKeyboardResponse,
-            stimulus: "applehorse.png",
+            stimulus: jsPsych.timelineVariable('image_path'),
             choices: ["A", "L"],
             stimulus_width: 500,
             maintain_aspect_ratio:true,
-            prompt: "<span style = 'font-size:170%'>apple<br><br></span"
+            prompt: jsPsych.timelineVariable('target_word'),
         }
-
-        jsPsych.run([fixation,sentence,attention, association,image,prime, target]);
+        var priming_proc = {
+            timeline: [fixation, image, prime, target],
+            timeline_variables: practice_stimuli,
+            randomize_order: true
+        }
+        jsPsych.run([training_plus_association, priming_proc])
 
       
     </script>
