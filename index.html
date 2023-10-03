@@ -14,7 +14,20 @@
     </head>
     <body> </body>
     <script>
-        const jsPsych = initJsPsych();
+        const jsPsych = initJsPsych(
+        {
+            on_finish: function(data) {
+                jsPsych.data.displayData();
+            }
+        }
+        );
+
+        var id = Math.floor(Math.random() * 1000000000);
+        console.log("id = ", id)
+
+        jsPsych.data.addProperties ({
+            ID: id
+        })
 
         var inital_instructions = {
             type: jsPsychInstructions, 
@@ -23,7 +36,10 @@
                 'page 2 instructions',
                 'page 3 instructions.'
             ],
-            show_clickable_nav: true 
+            show_clickable_nav: true,
+            data: {
+                typeoftrial: "instructions",
+            }
         }
 
         var association_instructions = {
@@ -31,14 +47,20 @@
             pages: [
                 'Done with sentences. Association time.'
             ],
-            show_clickable_nav: true 
+            show_clickable_nav: true,
+            data: {
+                typeoftrial: "instructions",
+            }
         }
         var priming_instructions = {
             type: jsPsychInstructions, 
             pages: [
                 'Priming task about to begin.'
             ],
-            show_clickable_nav: true 
+            show_clickable_nav: true,
+            data: {
+                typeoftrial: "instructions",
+            }
         }
 
         var slow_experiment_trial = {
@@ -53,6 +75,9 @@
             stimulus: "+", 
             choices: "NO_KEYS",
             trial_duration: 500,
+            data: {
+                typeoftrial: "fixation",
+            }
         }
 
         var sentence_number = 0;
@@ -62,11 +87,18 @@
          stimulus: jsPsych.timelineVariable('sentence'),
          choices: [" "],
          trial_duration: 100,
+         data: {
+            typeoftrial: "sentence",
+            sentence: jsPsych.timelineVariable('sentence'),
+            novel1: jsPsych.timelineVariable('novel1'),
+            novel2: jsPsych.timelineVariable('novel2'),
+            novel3: jsPsych.timelineVariable('novel3'),
+        },
          on_finish: function(data) {
             sentence_number = (sentence_number + 1) % 40;
             console.log("sentence_number=" + sentence_number);
-         }
         } 
+        }
 
         var random_attention_trials = jsPsych.randomization.sampleWithoutReplacement([...Array(35).keys()].map(x => x + 5),3);
 
@@ -74,7 +106,29 @@
 
         var attention = {
             type: jsPsychSurveyText,
-            questions: [{prompt:"Type any ONE novel word from the previous sentence:"}]
+            questions: [{prompt:"Type any ONE novel word from the previous sentence:"}],
+            data: {
+            typeoftrial: "attention",
+        },
+        on_finish: function(data){
+            var last_trial_data = jsPsych.data.get().filter({typeoftrial: 'sentence'}).last(1).values() [0];
+            console.log("last_trial_data=", last_trial_data);
+            data.novel1 = last_trial_data.novel1;
+            data.novel2 = last_trial_data.novel2;
+            data.novel3 = last_trial_data.novel3;
+            data.response = data.response.Q0
+        if (
+            jsPsych.pluginAPI.compareKeys(data.response, data.novel1) ||
+            jsPsych.pluginAPI.compareKeys(data.response, data.novel2) ||
+            jsPsych.pluginAPI.compareKeys(data.response, data.novel3)
+        ) {
+            data.correct=1;
+            console.log("correct= " + data.correct);
+        } else {
+            data.correct = 0;
+            console.log("correct= " + data.correct);
+        }
+        }
         };
 
         var attention_conditional = {
@@ -93,7 +147,14 @@
             type: jsPsychSurveyText,
             preamble:  "Respond with the first word comes to mind",
             questions: [{prompt:jsPsych.timelineVariable("cue")}],
-            trial_duration: 10
+            trial_duration: 10,
+            data: {
+                 typeoftrial: "association",
+                 cue: jsPsych.timelineVariable("cue")
+            },
+            on_finish: function(data){
+                data.response = data.response.Q0
+            }
         };
 
         var association_procedure = {
@@ -114,7 +175,10 @@
             trial_duration: 500,
             stimulus_width: 500,
             maintain_aspect_ratio: true,
-            prompt: "<span style = 'font-size:170%'><br><br></span"
+            prompt: "<span style = 'font-size:170%'><br><br></span",
+            data: {
+                typeoftrial: "image",
+            }
         }
 
         var prime = {
@@ -127,6 +191,9 @@
             prompt: function() {
                 return "<span style= 'font-size:200%'><br>" + String(jsPsych.timelineVariable('prime_word')) + "<br><span>";
             },
+            data: {
+                typeoftrial: "prime",
+            }
         }
         var target = {
             type:jsPsychImageKeyboardResponse,
@@ -137,6 +204,17 @@
             prompt: function() {
                 return "<span style= 'font-size:200%'><br>" + String(jsPsych.timelineVariable('target_word')) + "<br><span>";
             },
+            data: {
+                typeoftrial: "target",
+                target: jsPsych.timelineVariable('target_word'),
+                prime: jsPsych.timelineVariable('prime_word'),
+                type: jsPsych.timelineVariable('type'),
+                relatedness: jsPsych.timelineVariable('relatedness'),
+                correct_key: jsPsych.timelineVariable('correct_key')
+            },
+            on_finish: function(data) {
+                data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_key);
+            }
         }
 
         var priming_feedback = {
@@ -148,7 +226,10 @@
                 } else {
                     return false; 
                 }
-                }
+            },
+            data: {
+                typeoftrial: "feedback",
+            }
             }
         var priming_proc = {
             timeline: [fixation, image, prime, target,priming_feedback],
@@ -156,7 +237,7 @@
             randomize_order: true
         }
         //jsPsych.run([inital_instructions, training_plus_association,priming_instructions,priming_proc])
-        jsPsych.run([priming_proc])
+        jsPsych.run([training_procedure])
       
     </script>
 </html>
