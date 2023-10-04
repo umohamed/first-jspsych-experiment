@@ -236,8 +236,17 @@
             timeline_variables: practice_stimuli,
             randomize_order: true
         }
-        //jsPsych.run([inital_instructions, training_plus_association,priming_instructions,priming_proc])
-        jsPsych.run([training_procedure])
+
+        var thankYouTrial = {
+            type: jsPsychHtmlKeyboardResponse,
+            choices: [" "],
+            stimulus: `
+                <div>
+                <h1>Thank You for Completing the Experiment</h1>
+                    </div>
+                                `
+                 };
+        jsPsych.run([inital_instructions, training_plus_association,priming_instructions,priming_proc,thankYouTrial])
       
     </script>
 </html>
