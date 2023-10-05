@@ -74,7 +74,7 @@
             type: jsPsychHtmlKeyboardResponse,
             stimulus: "<b> Too slow </b>! <br><br> Please try to respond faster.",
             choices: "NO_KEYS",
-            trial_duration: 100
+            trial_duration: 10000
     
         }
 
@@ -94,7 +94,7 @@
          type: jsPsychHtmlKeyboardResponse,
          stimulus: jsPsych.timelineVariable('sentence'),
          choices: [" "],
-         trial_duration: 1000,
+         trial_duration: 5000,
          data: {
             typeoftrial: "sentence",
             sentence: jsPsych.timelineVariable('sentence'),
