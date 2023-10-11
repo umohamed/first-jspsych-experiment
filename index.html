@@ -39,9 +39,10 @@
         var inital_instructions = {
             type: jsPsychInstructions, 
             pages: [
-                'page 1 instructions',
-                'page 2 instructions',
-                'page 3 instructions.'
+                "How do we learn new words? <br><br>Most of the words we know we learned spontaneously, like when hearing a novel word while listening to someone speaking, watching TV or while reading.<br><br>",
+                "In this study, your task will be to simply read sentences containing new words. After the reading session, we will ask you to use these novel words in a word game. <br><br> This experiment has three blocks. Each block has reading and testing session.<br><br> Are you ready to start?",
+                "We will present one sentence at a time. <br><br>Read them carefully. When you are ready, press space bar for the next sentence. <br><br>In order to make sure you are reading carefully, there will be surprise questions during the reading session. <br><br>You will be asked to type in the novel words from the last sentence you read. <br><br>Minor spelling mistakes will be tolerated. Type in your answer and press enter when you are ready to move on to the next sentence",
+                "You will now read the sentences. <br> Press SPACEBAR when you have read the sentence and want to move on to the next."
             ],
             show_clickable_nav: true,
             data: {
@@ -52,7 +53,7 @@
         var association_instructions = {
             type: jsPsychInstructions, 
             pages: [
-                'Done with sentences. Association time.'
+            'In this segment, you will be asked to type in the first word that comes to your mind when you hear or read a given word. <br><br>Keep in mind that in this game, you can only use the words you read about in the reading session. <br><br>Type in your answer and press enter when you are ready for the next one.'
             ],
             show_clickable_nav: true,
             data: {
@@ -62,7 +63,9 @@
         var priming_instructions = {
             type: jsPsychInstructions, 
             pages: [
-                'Priming task about to begin.'
+                'This is our final game. <br><br>You will be presented with slides showing an apple and a horse. <br><br>Your task will be to respond as quickly as possible, on which side of the screen the apple or the horse is shown. <br><br>On the same screen, with pictures, two words will be presented. Read the first word, but respond in accordance with the second word. <br><br>For example, if you see words “boff” and “apple”, respond where the apple is. <br><br>If you see words “boff” and “horse”, respond where the horse is.',
+                'You will press A if you want to choose the picture on the left and <br><br> L if you want to choose the picture on the right'
+
             ],
             show_clickable_nav: true,
             data: {
